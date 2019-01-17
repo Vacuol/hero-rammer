@@ -307,7 +307,6 @@ void DMA2_Stream2_IRQHandler(void)
 
   /* USER CODE END DMA2_Stream2_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart1_rx);
-	
   /* USER CODE BEGIN DMA2_Stream2_IRQn 1 */
 	telecontroller_data();
   /* USER CODE END DMA2_Stream2_IRQn 1 */
@@ -323,7 +322,20 @@ void USART6_IRQHandler(void)
   /* USER CODE END USART6_IRQn 0 */
   HAL_UART_IRQHandler(&huart6);
   /* USER CODE BEGIN USART6_IRQn 1 */
-
+	timeout=0;
+    while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)//等待就绪
+	{
+	 timeout++;////超时处理
+     if(timeout>HAL_MAX_DELAY) break;		
+	
+	}
+     
+	timeout=0;
+	while(HAL_UART_Receive_IT(&huart6,judge.recieve,1) != HAL_OK)//一次处理完成之后，重新开启中断并设置RxXferCount为1
+	{
+	 timeout++; //超时处理
+	 if(timeout>HAL_MAX_DELAY) break;	
+	}
   /* USER CODE END USART6_IRQn 1 */
 }
 

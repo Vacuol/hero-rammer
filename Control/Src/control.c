@@ -20,6 +20,7 @@ struct telecon_data tele_data;
 //float underpan_I;//ok
 //float IOUT_P;
 //float IOUT_I;
+struct POWER ph;						//PH means power & heat
 
 /************CLOUD***************/
 struct cloud_parameter cloud_pitch,cloud_yaw;
@@ -53,7 +54,7 @@ void telecontroller_data(void)
 //	uint8_t w,a,s,d,press_l,press_r,shift;
 //	int16_t speed;
 
-	tele_data.ch0=((teledata_rx[0]| (teledata_rx[1] << 8)) & 0x07ff)-1024-7;						//右摇杆：左右
+	tele_data.ch0=((teledata_rx[0]| (teledata_rx[1] << 8)) & 0x07ff)-1024 ;						//右摇杆：左右
 	tele_data.ch1=(((teledata_rx[1] >> 3) | (teledata_rx[2] << 5)) & 0x07ff)-1024;				//右摇杆：上下
 	tele_data.ch2=(((teledata_rx[2] >> 6) | (teledata_rx[3] << 2) | (teledata_rx[4] << 10)) & 0x07ff)-1024;			//左：左右
 	tele_data.ch3=(((teledata_rx[4] >> 1) | (teledata_rx[5] << 7)) & 0x07ff)-1024; 				//左：上下
@@ -81,97 +82,20 @@ void telecontroller_data(void)
 		
 }
 	
-
-/*****底盘pid控制程序*****************
-包含速度pid（内环）与电流pid控制（外环）
-***************************************/
-//void underpan_pid(void)
-//{
-//	register uint8_t i;
-//	int16_t error;
-//	
-//	/********将遥控器数据接收********/
-//	underpan_para[0].set_speed=(int16_t)(1.0*(tele_data.ch3+tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
-//	underpan_para[1].set_speed=(int16_t)(1.0*(tele_data.ch3-tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
-//	underpan_para[2].set_speed=(int16_t)(1.0*(-tele_data.ch3-tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
-//	underpan_para[3].set_speed=(int16_t)(1.0*(-tele_data.ch3+tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);	
-//	
-//	
-//	/*******做4次pid计算********/
-//	for(i=0;i<4;i++)
+void Judge_Getdata()
+{
+//	if (judge.ID==POWERHEAT)
 //	{
-//		error=underpan_para[i].set_speed-underpan_para[i].rotation_rate;
-//		underpan_para[i].i_interg+=underpan_I*error;
-//		if(underpan_para[i].i_interg>1000)underpan_para[i].i_interg=1000;
-//		if(underpan_para[i].i_interg<-1000)underpan_para[i].i_interg=-1000;
-//		underpan_para[i].motor_output=underpan_P*error+underpan_para[i].i_interg;
-//		if(underpan_para[i].motor_output>CURRENT_LIM)underpan_para[i].motor_output=CURRENT_LIM;
-//		if(underpan_para[i].motor_output<-CURRENT_LIM)underpan_para[i].motor_output=-CURRENT_LIM;
-//		
-//		error=underpan_para[i].motor_output-underpan_para[i].average_current;
-//		underpan_para[i].s_interg+=IOUT_I*error;
-//		if(underpan_para[i].s_interg>8000)underpan_para[i].s_interg=8000;
-//		if(underpan_para[i].s_interg<-8000)underpan_para[i].s_interg=-8000;
-//		underpan_para[i].i_output=IOUT_P*error+underpan_para[i].s_interg;
-//		if(underpan_para[i].i_output>CURRENT_MAX)underpan_para[i].i_output=CURRENT_MAX;
-//		if(underpan_para[i].i_output<-CURRENT_MAX)underpan_para[i].i_output=-CURRENT_MAX;
-//	}	
-//}
-//	
-///**************云台yaw方向pid控制***************/
-//void cloud_y_v_pid(void)
-//{	
-//	int16_t err;
-//	float output;
-//	
-//	
-//	
-//	err=cloud_para[1].Bmechanical_angle-yaw;
-//	cloud_para[1].iout+=cloud_y_v_I*err;
-//	if(cloud_para[1].iout>1000)cloud_para[1].iout=1000;
-//	if(cloud_para[1].iout<-1000)cloud_para[1].iout=-1000;	
-//	output=cloud_y_v_P*err+cloud_para[1].iout+cloud_y_v_D*sensor.gyro.radian.x;
-//	cloud_para[1].motor_output=(int16_t)output;
-//	if(cloud_para[1].motor_output>5000)cloud_para[1].motor_output=5000;
-//	if(cloud_para[1].motor_output<-5000)cloud_para[1].motor_output=-5000;		
-//}
-
-
-///**************云台pitch方向pid控制***************/
-//void cloud_p_v_pid(void)
-//{
-//	int16_t err;
-//	float output;
-//	
-//	err=cloud_para[0].Bmechanical_angle-pitch;
-//	cloud_para[0].iout+=cloud_p_v_I*err;
-//	if(cloud_para[0].iout>1000)cloud_para[0].iout=1000;
-//	if(cloud_para[0].iout<-1000)cloud_para[0].iout=-1000;	
-//	output=cloud_p_v_P*err+cloud_para[0].iout+cloud_p_v_D*sensor.gyro.radian.y;
-//	cloud_para[0].motor_output=(int16_t)output;
-//	if(cloud_para[0].motor_output>5000)cloud_para[0].motor_output=5000;
-//	if(cloud_para[0].motor_output<-5000)cloud_para[0].motor_output=-5000;
-//}
-
-///**************拨弹轮速度pid控制***************/
-//void Bodan_pid(void)
-//{
-//	int16_t err[2];
-//	float output;
-
-//	dan_para[0].error[2]=dan_para[0].error[1];			
-//	dan_para[0].error[1]=dan_para[0].error[0];		
-//	dan_para[0].error[0]=bodan_speed-dan_para[0].speed;
-//	err[0]=dan_para[0].error[0]-dan_para[0].error[1];
-//	err[1]=dan_para[0].error[0]-2*dan_para[0].error[1]+dan_para[0].error[2];
-
-//	output=dan_P*err[0]+dan_I*dan_para[0].error[0]+dan_D*err[1];
-//	dan_para[0].motor_output+=output;
-//	if(dan_para[0].motor_output>8000)dan_para[0].motor_output=8000;
-//	if(dan_para[0].motor_output<-8000)dan_para[0].motor_output=-8000;	
-
-//}
-
+//		ph.data[ph.counter] = judge.recieve[0];
+//		ph.counter++;
+//		if (ph.counter == 20)
+//		{
+//			ph.counter = 0;
+//			judge.count=0;
+	
+	if (judge.ID==0) judge.count=0;
+	
+}
 
 /*参数统一初始化*/	
 void para_init(void)

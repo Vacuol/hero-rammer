@@ -27,4 +27,6 @@ void Chebyshev50HzLPF(Filter_t *F)
 		F->ybuf[0] = F->ybuf[0] + NUM[i] * F->xbuf[i] - DEN[i] * F->ybuf[i];
 	}
 	F->filtered_value = F->ybuf[0];
+	if (F->filtered_value>400) F->filtered_value=400;
+	if (F->filtered_value<-400) F->filtered_value=-400;
 }

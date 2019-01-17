@@ -7,6 +7,8 @@
 #define pitch_mid  -2000					//云台pitch轴初值   800				-800black
 #define yaw_mid -2600						//云台yaw轴初值			300		1000black
 
+/*****ID OF JUDGE****/
+#define POWERHEAT 0x04
 
 /*****teler*******/
 struct telecon_data
@@ -37,6 +39,18 @@ struct underpan_parameter
 	int16_t motor_current;
 	uint16_t motor_temperature;
 };
+
+typedef struct POWER
+{
+	uint8_t data[20];
+	uint8_t counter;
+	float volt;
+	float current;
+	float power;
+	float power_Buffer;
+	uint16_t heat_17;
+	uint16_t heat_42;
+}POWER;
 
 typedef struct cloud_parameter 
 {
@@ -76,7 +90,7 @@ typedef struct JUDGE
     uint8_t recieve[1];
     uint8_t count;
     uint8_t transmit[1];
-
+	uint8_t ID;
 } JUDGE;
 
 typedef struct
@@ -94,6 +108,7 @@ extern RxPID rxPID;
 extern uint8_t teledata_rx[18];
 extern struct telecon_data tele_data;
 extern struct underpan_parameter underpan_para[4];
+extern struct POWER ph;
 extern struct cloud_parameter cloud_pitch,cloud_yaw;
 extern struct rammer_parameter rammer_42;
 extern struct rammer_parameter rammer_17;
@@ -103,9 +118,6 @@ extern struct JUDGE judge;
 extern int16_t pitch;
 extern int16_t yaw;
 
-
-
-
 //****************function*****************//
 void telecontroller_data(void);
 void underpan_pid(void);
@@ -113,6 +125,6 @@ void cloud_y_v_pid(void);
 void cloud_p_v_pid(void);
 void para_init(void);
 void Bodan_pid(void);
-
+void Judge_Getdata(void);
 
 #endif

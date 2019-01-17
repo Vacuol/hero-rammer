@@ -141,9 +141,38 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	/******************裁判系统串口数据处理********************/
 	else if (huart->Instance==USART6)
 	{
-		
-		
-		
+		switch (judge.count)
+        {
+			case 0:
+                if (judge.recieve[0]==0xA5) judge.count=1;
+                else judge.count=0;
+                break;
+			case 1:
+				judge.count=2;
+				break;
+			case 2:
+				judge.count=3;
+				break;
+			case 3:
+				judge.count=4;
+				break;
+			case 4:
+				judge.count=5;
+				break;
+			case 5:
+				judge.count=6;
+				break;
+			case 6:
+				if (judge.recieve[0]==0x04) judge.ID=POWERHEAT;
+				else judge.ID = 0;
+				judge.count=7;
+				break;
+			case 7:
+				Judge_Getdata();
+				break;
+		}			
+					
+				
 		
 	}
 	

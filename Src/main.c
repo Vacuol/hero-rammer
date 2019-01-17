@@ -125,25 +125,27 @@ int main(void)
 	HAL_Delay(1000);
 	MPU6050_Init();																//�����ǳ�ʼ��
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);									//42mm
+	
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);									//17mm
 	
 	TIM1->CCR1=800; 
 	TIM1->CCR4=800; 
-	HAL_Delay(2000);
-	HAL_Delay(2000);
-	HAL_Delay(2000);
-	HAL_Delay(2000);
-	HAL_Delay(2000);
- 	TIM1->CCR1=1450;
-	TIM1->CCR4=1450;
+	TIM1->CCR2=800; 
+	TIM1->CCR3=800;
 
-	//MPU6050_GyroOffest();														//������У׼
+// 	TIM1->CCR1=1450;
+//	TIM1->CCR4=1450;
+//	TIM1->CCR2=1650;
+//	TIM1->CCR3=1650;
+
+	//MPU6050_GyroOffest();				
 	
 //	
-//	HAL_UART_Receive_IT(&huart2, camera.recieve,sizeof(camera.recieve));		//�����Ӿ����ݽ����ж�
-	HAL_UART_Receive_IT(&huart4, &rxPID.pidReadBuf, 1);							//pid���ڲ��������ж�
-//	HAL_UART_Receive_IT(&huart6, judge.recieve,sizeof(judge.recieve));			//�������ϵͳ�����ж�??
-	//ѡ����λ��PID���ζ���
+//	HAL_UART_Receive_IT(&huart2, camera.recieve,sizeof(camera.recieve));		
+	HAL_UART_Receive_IT(&huart4, &rxPID.pidReadBuf, 1);			
+	HAL_UART_Receive_IT(&huart6, judge.recieve,sizeof(judge.recieve));	
 	rxPID.pidAdjust = &(cloud_pitch_speed_pid);
   /* USER CODE END 2 */
 
@@ -156,11 +158,11 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
 	output[0]=mpu6050.Gyro.Radian.z;
-	output[1]=cloud_yaw_speed_pid.output;
-	output[2]=cloud_pitch_speed_pid.output;
+	output[1]=MPUz50Hz.filtered_value;
+	output[2]=mpu6050.Gyro.Radian.y;
 	output[3]=MPUy50Hz.filtered_value;
-	output[4]=mpu6050.Gyro.Radian.y;
-	output[5]=MPUz50Hz.filtered_value;	
+	output[4]=cloud_pitch.Bmechanical_angle;
+	output[5]=cloud_yaw.Bmechanical_angle;
 	sendware(output,sizeof(output));
 
 
@@ -170,8 +172,14 @@ int main(void)
 		TIM1->CCR4=1450;
 	}
 	if (tele_data.s1==2) {  	
+		TIM1->CCR2=1950; 
+		TIM1->CCR3=1950;
+	}
+	if (tele_data.s1==3) {  	
 		TIM1->CCR1=800; 
-		TIM1->CCR4=800;
+		TIM1->CCR4=800; 
+		TIM1->CCR2=800; 
+		TIM1->CCR3=800;
 	}
 	
   }
