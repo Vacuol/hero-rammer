@@ -9,7 +9,7 @@
 #include "control.h"
 #include <math.h>
 #include "pid.h"
-
+#include <string.h>
 
 //struct CAMERA camera;
 
@@ -27,6 +27,31 @@ uint8_t		RX_PID_Sum = 0;
 uint8_t		pidReadBuf;
 uint8_t 	charBuf[4];
 PID_Regulator_t 	*pidAdjust;
+
+//串口发送1个字芿
+//c:要发送的字符
+void usart_send_char(uint8_t c)
+{
+    while(__HAL_UART_GET_FLAG(&huart4,UART_FLAG_TC)==RESET){}; 
+    UART4->DR=c;  
+} 
+// *data:	所发送数据数组，最大长度为6
+// n:		发送数据所占字节数
+void UART_SendDataToPC(float *data, uint8_t n)
+{
+	int8_t i = 0;
+	unsigned char *point;
+	point = (unsigned char*)data;	  //得到float的地址
+	if(n > 24)
+		n = 24;
+	usart_send_char('$');
+	usart_send_char('%');
+	usart_send_char(n * 0.25);
+//	
+	for(i = 0; i < n;i ++)
+		usart_send_char(point[i]);
+}
+
 
 void sendware(void *wareaddr, uint32_t waresize)
 {
@@ -131,10 +156,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				
 
 	
-					if(pitch<(pitch_mid-600))pitch=pitch_mid-600;
-					if(pitch>(pitch_mid+600))pitch=pitch_mid+600;
-					if(yaw<(yaw_mid-800))yaw=yaw_mid-800;
-					if(yaw>(yaw_mid+800))yaw=yaw_mid+800;
+//					if(pitch<(pitch_mid-600))pitch=pitch_mid-600;
+//					if(pitch>(pitch_mid+600))pitch=pitch_mid+600;
+//					if(yaw<(yaw_mid-800))yaw=yaw_mid-800;
+//					if(yaw>(yaw_mid+800))yaw=yaw_mid+800;
 					
     }   
 	}
@@ -160,11 +185,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				judge.count=5;
 				break;
 			case 5:
+				if (judge.recieve[0]==0x04) judge.ID=POWERHEAT;
+				else judge.ID = 0;
 				judge.count=6;
 				break;
 			case 6:
-				if (judge.recieve[0]==0x04) judge.ID=POWERHEAT;
-				else judge.ID = 0;
 				judge.count=7;
 				break;
 			case 7:
@@ -176,53 +201,53 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		
 	}
 	
+	/*************PID参数串口数据处理***********/
 	else if (huart->Instance == UART4)
 	{
-
-		RX_PID_Buf[RX_PID_Count & 0x7f] = rxPID.pidReadBuf;
-	
-		if ((RX_PID_Count & 0x7f) == 0 && RX_PID_Buf[0] != '$')
+		rxPID.Buf[rxPID.Count & 0x7f] = rxPID.pidReadBuf;
+		//是否开始接收
+		if ((rxPID.Count & 0x7f) == 0 && rxPID.Buf[0] != '$')
 			return;
 
-		RX_PID_Count++;
+		rxPID.Count++;
 
-		if ((RX_PID_Count & 0x7f) == 8)
+		if ((rxPID.Count & 0x7f) == 8)
 		{
-		
-			if (RX_PID_Sum == pidReadBuf)
+			//接收正确
+			if (rxPID.Sum == rxPID.pidReadBuf)
 			{
 				for (int i = 0; i < 4; i++)
-					charBuf[i] = RX_PID_Buf[i + 3];
+					charBuf[i] = rxPID.Buf[i + 3];
 
-				switch (RX_PID_Buf[1])
+				switch (rxPID.Buf[1])
 				{
 				case 'p':
-					memcpy(&pidAdjust->kp, charBuf, 4);
-					if (RX_PID_Buf[2] == '-')
-						pidAdjust->kp = -pidAdjust->kp;
+					memcpy(&rxPID.pidAdjust->kp, charBuf, 4);
+					if (rxPID.Buf[2] == '-')
+						rxPID.pidAdjust->kp = -rxPID.pidAdjust->kp;
 					break;
 				case 'i':
-					memcpy(&pidAdjust->ki, charBuf, 4);
-					if (RX_PID_Buf[2] == '-')
-						pidAdjust->ki = -pidAdjust->ki;
+					memcpy(&rxPID.pidAdjust->ki, charBuf, 4);
+					if (rxPID.Buf[2] == '-')
+						rxPID.pidAdjust->ki = -rxPID.pidAdjust->ki;
 					break;
 				case 'd':
-					memcpy(&pidAdjust->kd, charBuf, 4);
-					if (RX_PID_Buf[2] == '-')
-						pidAdjust->kd = -pidAdjust->kd;
+					memcpy(&rxPID.pidAdjust->kd, charBuf, 4);
+					if (rxPID.Buf[2] == '-')
+						rxPID.pidAdjust->kd = -rxPID.pidAdjust->kd;
 					break;
 				}
-				RX_PID_Sum = 0;
-				RX_PID_Count = 0;
+				rxPID.Sum = 0;
+				rxPID.Count = 0;
 			}
 			else
 			{
-				RX_PID_Sum = 0;
-				RX_PID_Count = 0;
+				rxPID.Sum = 0;
+				rxPID.Count = 0;
 			}
 		}
 		else
-			RX_PID_Sum += pidReadBuf;
+			rxPID.Sum += rxPID.pidReadBuf;
     }
  
 }

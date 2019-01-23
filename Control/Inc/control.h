@@ -118,11 +118,14 @@ extern struct JUDGE judge;
 extern int16_t pitch;
 extern int16_t yaw;
 
+extern PID_Regulator_t power_control_pid;
+
 //****************function*****************//
 void telecontroller_data(void);
 void underpan_pid(void);
 void cloud_y_v_pid(void);
 void cloud_p_v_pid(void);
+void PowerControl(void);
 void para_init(void);
 void Bodan_pid(void);
 void Judge_Getdata(void);

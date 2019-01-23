@@ -12,9 +12,12 @@
 #include "mpu6050.h"
 #include "filter.h"
 uint16_t Timetick1ms = 0;
-
+uint16_t TimeElasped=0;
 void Timer_interrupt(void)
 {
+	TIM12->CNT=0;
+	
+	
 	Timetick1ms++;
 	MPU6050_GetData();												//get mpu data
 	MPUy50Hz.raw_value=mpu6050.Gyro.Radian.y;						//filter get data
@@ -30,6 +33,7 @@ void Timer_interrupt(void)
 		Rammer_pid();
 		Cloud_Position();
 		Underpan_pid();
+		PowerControl();
 		Rammer_motor_output(rammer_42_pid.output,rammer_17_pid.output,rammer_42_ver_pid.output);
 		
 	}
@@ -40,6 +44,7 @@ void Timer_interrupt(void)
 	Underpan_motor_output((int16_t)(underpan_201_pid.output),(int16_t)(underpan_202_pid.output),(int16_t)(underpan_203_pid.output),(int16_t)(underpan_204_pid.output));	
 	if (Timetick1ms>999) Timetick1ms=0;
 	
+	TimeElasped=TIM12->CNT;
 }
 
 

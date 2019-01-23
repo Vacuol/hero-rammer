@@ -8,7 +8,7 @@
 #include "control.h"
 #include "mpu6050.h"
 #include "pid.h"
-
+#include <string.h>
 
 /************TELE***************/
 uint8_t teledata_rx[18];
@@ -38,11 +38,20 @@ struct rammer_parameter rammer_42_ver;
 /************CAMERA***************/
 struct CAMERA camera;
 
+/************CAPCITY***************/
+extern ADC_HandleTypeDef hadc3;
+float CurrentCapVoltage = 0;
+float LastPower = 0;
+float PreviousPower = 0;
+float SpeedOfDischarge;
+#define PowerMax 50
+
+
 //裁判系统
 struct JUDGE judge;
 
 RxPID rxPID;
-
+uint8_t flag=1;
 
 /****************************************/
 /****************function****************/
@@ -83,18 +92,105 @@ void telecontroller_data(void)
 }
 	
 void Judge_Getdata()
-{
-//	if (judge.ID==POWERHEAT)
-//	{
-//		ph.data[ph.counter] = judge.recieve[0];
-//		ph.counter++;
-//		if (ph.counter == 20)
-//		{
-//			ph.counter = 0;
-//			judge.count=0;
-	
+{	
+	if (judge.ID==POWERHEAT)
+	{
+    		
+		ph.data[ph.counter] = judge.recieve[0];
+		ph.counter++;
+		if (ph.counter == 20)
+		{
+			ph.counter = 0;
+			judge.count=0;
+			memcpy(&ph.volt,&ph.data[0],4);
+			memcpy(&ph.current,&ph.data[4],4);
+			memcpy(&ph.power,&ph.data[8],4);
+			memcpy(&ph.power_Buffer,&ph.data[12],4);
+			memcpy(&ph.heat_17,&ph.data[16],2);
+			memcpy(&ph.heat_42,&ph.data[18],2);
+		}
+	}
 	if (judge.ID==0) judge.count=0;
 	
+}
+
+
+void PowerControl()
+{
+    static uint8_t status = 0;
+	static uint8_t cnt = 0;
+	float err=0.2;
+	power_control_pid.fdb=ph.power;
+	power_control_pid.ref=PowerMax;
+	HAL_ADC_Start_IT(&hadc3);
+#if 0
+	if(switche)//手动开关
+	{
+		charge();
+		underpan_201_pid.outputMax=1000;
+		underpan_202_pid.outputMax=1000;
+		underpan_203_pid.outputMax=1000;
+		underpan_204_pid.outputMax=1000;
+	}
+	else
+	{
+        if(CurrentCapVoltage>8)
+		    discharge();//改速度限幅
+		underp an_201_pid.outputMax=3000;
+		underpan_202_pid.outputMax=3000;
+		underpan_203_pid.outputMax=3000;
+		underpan_204_pid.outputMax=3000;
+	}
+#endif
+	
+	
+	if(ph.power<PowerMax&&flag==1)//正常状态功率大于1W且小于80W
+	{
+		cnt=0;
+		if (status==0) 
+        {
+			PID_Calc(&power_control_pid);
+            TIM5->CCR2 = 0;  //停止放电  
+		    if(power_control_pid.output>=0)
+				TIM5->CCR1=power_control_pid.output;
+			else
+				TIM5->CCR1=0;
+        }
+		else
+		{
+			TIM5->CCR1 =  0;  //停止充电 
+		}
+	}
+	else
+	{
+		cnt++;
+		if(cnt>=3)
+		{
+			//cnt=0;
+			if(CurrentCapVoltage<0.5)
+			{
+				flag=1;
+				TIM5->CCR2 =  0;  //停止放电
+				TIM5->CCR1 =  100;//开始充电
+			}
+			else
+			{
+				flag=0;
+				TIM5->CCR1 =  0;  //停止充电
+				TIM5->CCR2=2000;//开始放电
+			}
+		}
+	}	
+    PreviousPower = LastPower;
+    LastPower = ph.power;
+    if (CurrentCapVoltage>3.2)
+    {
+		status = 1; //已充满
+    }
+    else
+    {
+        status = 0; //未充满
+    }
 }
 
 /*参数统一初始化*/	

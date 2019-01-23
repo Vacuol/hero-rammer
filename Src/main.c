@@ -39,6 +39,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
+#include "adc.h"
 #include "can.h"
 #include "dma.h"
 #include "tim.h"
@@ -57,7 +58,9 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+extern PID_Regulator_t 	*pidAdjust;
+extern float CurrentCapVoltage;
+extern float flag;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -82,7 +85,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
-	float output[8];
+	float output[6];
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -91,7 +94,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+	judge.count=0;
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -107,16 +110,19 @@ int main(void)
   MX_CAN1_Init();
   MX_TIM4_Init();
   MX_TIM6_Init();
-  MX_TIM12_Init();
   MX_UART4_Init();
   MX_USART1_UART_Init();
   MX_USART6_UART_Init();
   MX_USART2_UART_Init();
   MX_TIM1_Init();
+  MX_TIM5_Init();
+  MX_TIM12_Init();
+  MX_ADC3_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
+//  HAL_Delay(10000);
 	HAL_UART_Receive_DMA(&huart1,teledata_rx,sizeof(teledata_rx));				//ң������������ͨ��DMA�жϴ���teledata			
 	HAL_TIM_Base_Start_IT(&htim6);												//��ʱ���жϴ�
 	CAN1_Init();																//can��ʼ��
@@ -124,17 +130,21 @@ int main(void)
 	HAL_GPIO_WritePin(GPIOH,GPIO_PIN_4, GPIO_PIN_SET);
 	HAL_Delay(1000);
 	MPU6050_Init();																//�����ǳ�ʼ��
+	HAL_TIM_Base_Start(&htim12);
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);									//42mm
 	
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);									//17mm
-	
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);									//17mm		
 	TIM1->CCR1=800; 
 	TIM1->CCR4=800; 
 	TIM1->CCR2=800; 
 	TIM1->CCR3=800;
-
+	
+	HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);									//电容充电
+	TIM5->CCR1=0;
+	HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);									//电容放电
+	TIM5->CCR2=0;
 // 	TIM1->CCR1=1450;
 //	TIM1->CCR4=1450;
 //	TIM1->CCR2=1650;
@@ -143,10 +153,10 @@ int main(void)
 	//MPU6050_GyroOffest();				
 	
 //	
-//	HAL_UART_Receive_IT(&huart2, camera.recieve,sizeof(camera.recieve));		
-	HAL_UART_Receive_IT(&huart4, &rxPID.pidReadBuf, 1);			
+//	HAL_UART_Receive_IT(&huart2, camera.recieve,sizeof(camera.recieve));	
+//	HAL_UART_Receive_IT(&huart4, &rxPID.pidReadBuf, 1);			
 	HAL_UART_Receive_IT(&huart6, judge.recieve,sizeof(judge.recieve));	
-	rxPID.pidAdjust = &(cloud_pitch_speed_pid);
+//	rxPID.pidAdjust = &(power_control_pid);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -157,15 +167,15 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	output[0]=mpu6050.Gyro.Radian.z;
-	output[1]=MPUz50Hz.filtered_value;
-	output[2]=mpu6050.Gyro.Radian.y;
-	output[3]=MPUy50Hz.filtered_value;
-	output[4]=cloud_pitch.Bmechanical_angle;
-	output[5]=cloud_yaw.Bmechanical_angle;
+	output[0] = ph.power;
+	output[1] = 50;//.Gyro.Origin.y;//4000 * sinf(a+1);	
+	output[2] = underpan_202_pid.output;//cloudPitch.Speed;
+	output[3] = flag;//cloudPitch.AnglePID.dout;
+	output[4] = CurrentCapVoltage;//cloudYaw.Angle;
+	output[5] = power_control_pid.fdb;//cloudPitch.AnglePID.i*100;
 	sendware(output,sizeof(output));
-
-
+//	UART_SendDataToPC(output,sizeof(output));
+	//HAL_Delay(10);
  
 	if (tele_data.s1==1) {  	
 		TIM1->CCR1=1450; 
@@ -257,14 +267,11 @@ void SystemClock_Config(void)
   */
 static void MX_NVIC_Init(void)
 {
-  /* DMA2_Stream2_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
   /* TIM6_DAC_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
   /* USART6_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(USART6_IRQn, 4, 0);
+  HAL_NVIC_SetPriority(USART6_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(USART6_IRQn);
 }
 

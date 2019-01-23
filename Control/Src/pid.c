@@ -26,6 +26,7 @@ PID_Regulator_t underpan_202_pid;
 PID_Regulator_t underpan_203_pid;
 PID_Regulator_t underpan_204_pid;
 
+PID_Regulator_t power_control_pid;
 
 struct underpan_parameter underpan_para[4];
 
@@ -164,8 +165,6 @@ void Underpan_pid(void)
 	
 }
 
-
-
 void ALLPID_Init()
 {
 								    /****kp		ki		kd	    inte	output****/
@@ -191,5 +190,5 @@ void ALLPID_Init()
 
 	PID_Init(&underpan_204_pid	, 2,	0.1,	0,	1000,	3000,	positional);
 	
-	
+	PID_Init(&power_control_pid	, 10,	0,	0,	1000,	1800,	increment);
 }
