@@ -1,12 +1,10 @@
 hero\system_stm32f4xx.o: ..//Src/system_stm32f4xx.c
 hero\system_stm32f4xx.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 hero\system_stm32f4xx.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h
-hero\system_stm32f4xx.o: C:\ProgramSetup\keil5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\core_cm4.h
-hero\system_stm32f4xx.o: C:\ProgramSetup\keil5\ARM\ARMCC\Bin\..\include\stdint.h
-hero\system_stm32f4xx.o: C:\ProgramSetup\keil5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_version.h
-hero\system_stm32f4xx.o: C:\ProgramSetup\keil5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_compiler.h
-hero\system_stm32f4xx.o: C:\ProgramSetup\keil5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_armcc.h
-hero\system_stm32f4xx.o: C:\ProgramSetup\keil5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\mpu_armv7.h
+hero\system_stm32f4xx.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\core_cm4.h
+hero\system_stm32f4xx.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+hero\system_stm32f4xx.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_compiler.h
+hero\system_stm32f4xx.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_armcc.h
 hero\system_stm32f4xx.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
 hero\system_stm32f4xx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 hero\system_stm32f4xx.o: ../Inc/stm32f4xx_hal_conf.h
@@ -15,7 +13,7 @@ hero\system_stm32f4xx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
 hero\system_stm32f4xx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
 hero\system_stm32f4xx.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 hero\system_stm32f4xx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-hero\system_stm32f4xx.o: C:\ProgramSetup\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+hero\system_stm32f4xx.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 hero\system_stm32f4xx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
 hero\system_stm32f4xx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
 hero\system_stm32f4xx.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h

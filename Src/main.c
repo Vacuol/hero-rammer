@@ -60,7 +60,7 @@
 /* Private variables ---------------------------------------------------------*/
 extern PID_Regulator_t 	*pidAdjust;
 extern float CurrentCapVoltage;
-extern float flag;
+extern float CurrentSpeed;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -115,9 +115,9 @@ int main(void)
   MX_USART6_UART_Init();
   MX_USART2_UART_Init();
   MX_TIM1_Init();
-  MX_TIM5_Init();
   MX_TIM12_Init();
   MX_ADC3_Init();
+  MX_CAN2_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
@@ -128,6 +128,8 @@ int main(void)
 	CAN1_Init();																//can��ʼ��
 	HAL_GPIO_WritePin(GPIOH,GPIO_PIN_2, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOH,GPIO_PIN_4, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOH,GPIO_PIN_3, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOH,GPIO_PIN_5, GPIO_PIN_SET);
 	HAL_Delay(1000);
 	MPU6050_Init();																//�����ǳ�ʼ��
 	HAL_TIM_Base_Start(&htim12);
@@ -141,15 +143,6 @@ int main(void)
 	TIM1->CCR2=800; 
 	TIM1->CCR3=800;
 	
-	HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);									//电容充电
-	TIM5->CCR1=0;
-	HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);									//电容放电
-	TIM5->CCR2=0;
-// 	TIM1->CCR1=1450;
-//	TIM1->CCR4=1450;
-//	TIM1->CCR2=1650;
-//	TIM1->CCR3=1650;
-
 	//MPU6050_GyroOffest();				
 	
 //	
@@ -169,10 +162,10 @@ int main(void)
   /* USER CODE BEGIN 3 */
 	output[0] = ph.power;
 	output[1] = 50;//.Gyro.Origin.y;//4000 * sinf(a+1);	
-	output[2] = underpan_202_pid.output;//cloudPitch.Speed;
-	output[3] = flag;//cloudPitch.AnglePID.dout;
-	output[4] = CurrentCapVoltage;//cloudYaw.Angle;
-	output[5] = power_control_pid.fdb;//cloudPitch.AnglePID.i*100;
+	output[2] = 1;//cloudPitch.Speed;
+	output[3] = CurrentCapVoltage;//cloudPitch.AnglePID.dout;
+	output[4] = 0;//cloudYaw.Angle;
+	output[5] = 0;//cloudPitch.AnglePID.i*100;
 	sendware(output,sizeof(output));
 //	UART_SendDataToPC(output,sizeof(output));
 	//HAL_Delay(10);

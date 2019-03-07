@@ -120,6 +120,9 @@ extern int16_t yaw;
 
 extern PID_Regulator_t power_control_pid;
 
+
+extern uint8_t HoldShift;
+extern uint8_t ambulance;
 //****************function*****************//
 void telecontroller_data(void);
 void underpan_pid(void);

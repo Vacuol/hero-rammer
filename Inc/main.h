@@ -49,6 +49,11 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define Discharge_Pin GPIO_PIN_11
+#define Discharge_GPIO_Port GPIOH
+#define Charge_Pin GPIO_PIN_10
+#define Charge_GPIO_Port GPIOH
+
 /* ########################## Assert Selection ############################## */
 /**
   * @brief Uncomment the line below to expanse the "assert_param" macro in the 

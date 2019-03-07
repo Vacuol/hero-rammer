@@ -7,16 +7,14 @@ hero\control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
 hero\control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
 hero\control.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 hero\control.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h
-hero\control.o: C:\ProgramSetup\keil5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\core_cm4.h
-hero\control.o: C:\ProgramSetup\keil5\ARM\ARMCC\Bin\..\include\stdint.h
-hero\control.o: C:\ProgramSetup\keil5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_version.h
-hero\control.o: C:\ProgramSetup\keil5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_compiler.h
-hero\control.o: C:\ProgramSetup\keil5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_armcc.h
-hero\control.o: C:\ProgramSetup\keil5\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\mpu_armv7.h
+hero\control.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\core_cm4.h
+hero\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+hero\control.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_compiler.h
+hero\control.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_armcc.h
 hero\control.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
 hero\control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 hero\control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-hero\control.o: C:\ProgramSetup\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+hero\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 hero\control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
 hero\control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
 hero\control.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
@@ -38,4 +36,4 @@ hero\control.o: ..\Control\Inc\pid.h
 hero\control.o: ..\Control\Inc\mpu6050.h
 hero\control.o: ..\Control\Inc\myiic.h
 hero\control.o: ..\Control\Inc\sys.h
-hero\control.o: C:\ProgramSetup\keil5\ARM\ARMCC\Bin\..\include\string.h
+hero\control.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

@@ -11,14 +11,14 @@
 uint8_t TxData[8];
 uint32_t pTxMailbox;
 
-CAN_TxHeaderTypeDef  Tx1Message;		//·¢ËÍÅäÖÃ²ÎÊý
-CAN_RxHeaderTypeDef  Rx1Message;		//½ÓÊÕÅäÖÃ²ÎÊý
+CAN_TxHeaderTypeDef  Tx1Message;		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½
+CAN_RxHeaderTypeDef  Rx1Message;		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½
 
 void CAN1_Init()						
 {
 CAN_FilterTypeDef canfilter;
 	
-
+	//canfilter.FilterNumber = 0;
 	canfilter.FilterMode = CAN_FILTERMODE_IDMASK;
 	canfilter.FilterScale = CAN_FILTERSCALE_32BIT;
 	
@@ -45,11 +45,41 @@ CAN_FilterTypeDef canfilter;
 	HAL_CAN_Start(&hcan1);
 }
 
+void CAN2_Init()						
+{
+CAN_FilterTypeDef canfilter;
+	
+	//canfilter.FilterNumber = 14;
+	canfilter.FilterMode = CAN_FILTERMODE_IDMASK;
+	canfilter.FilterScale = CAN_FILTERSCALE_32BIT;
+	
+	//  //filtrate any ID you want here
+	canfilter.FilterIdHigh = 0x0000;
+	canfilter.FilterIdLow = 0x0000;
+	canfilter.FilterMaskIdHigh = 0x0000;
+	canfilter.FilterMaskIdLow = 0x0000;
+  
+	canfilter.FilterFIFOAssignment = CAN_FilterFIFO0;
+	canfilter.FilterActivation = ENABLE;
+	canfilter.SlaveStartFilterBank = 14;
+	  //use different filter for can1&can2
+	canfilter.FilterBank=0;
+//    canfilter.FilterNumber = 0;
+//    hcan1.pTxMsg = &Tx1Message;
+//    hcan1.pRxMsg = &Rx1Message;
+  
+
+	HAL_CAN_ConfigFilter(&hcan1,&canfilter);
+	
+	HAL_CAN_ActivateNotification(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING);
+
+	HAL_CAN_Start(&hcan1);
+}
 
 /***************************************
-µ×ÅÌµçµ÷id£º201µ½204
-ÔÆÌ¨µçµ÷id£º205µ½206
-²¦µ¯µçµ÷id£º207
+ï¿½ï¿½ï¿½Ìµï¿½ï¿½idï¿½ï¿½201ï¿½ï¿½204
+ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½idï¿½ï¿½205ï¿½ï¿½206
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½idï¿½ï¿½207
 ***************************************/
 
 void CAN_Getdata(CAN_HandleTypeDef *hcan,CAN_RxHeaderTypeDef *pHeader,uint8_t aData[])
@@ -132,8 +162,8 @@ void CAN_Getdata(CAN_HandleTypeDef *hcan,CAN_RxHeaderTypeDef *pHeader,uint8_t aD
 }
 
 
-/*·¢ËÍÊý¾Ý
-µ×ÅÌ·¢ËÍÊý¾ÝÊ±£¬±êÊ¶·ûÎª0x200*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½Ì·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½Îª0x200*/
 void Underpan_motor_output(int16_t iq1,int16_t iq2,int16_t iq3,int16_t iq4)
 {
 	
@@ -154,8 +184,8 @@ void Underpan_motor_output(int16_t iq1,int16_t iq2,int16_t iq3,int16_t iq4)
 	HAL_CAN_AddTxMessage(&hcan1, &Tx1Message,  TxData, &pTxMailbox);
 }
 
-/*·¢ËÍÊý¾Ý
-ÔÆÌ¨·¢ËÍÊý¾ÝÊ±£¬±êÊ¶·ûÎª0x2ff*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½Îª0x2ff*/
 void Cloud_motor_output(int16_t iq1,int16_t iq2)
 {
 	Tx1Message.StdId = 0x2ff;
@@ -172,8 +202,8 @@ void Cloud_motor_output(int16_t iq1,int16_t iq2)
 }
 
 
-/*²¦µ¯µç»úÊä³ö³ÌÐò
-±êÊ¶·ûÎª0x1ff*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½Ê¶ï¿½ï¿½Îª0x1ff*/
 void Rammer_motor_output(int16_t iq1,int16_t iq2,int16_t iq3)
 {
 	

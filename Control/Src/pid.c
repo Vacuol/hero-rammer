@@ -89,7 +89,7 @@ void Cloud_Speed(void)
 	PID_Calc(&cloud_pitch_speed_pid);
 	
 	//YAW
-	cloud_yaw_speed_pid.fdb = MPUz50Hz.filtered_value;
+	cloud_yaw_speed_pid.fdb = MPUx50Hz.filtered_value;
 	cloud_yaw_speed_pid.ref = cloud_yaw_position_pid.output;
 	PID_Calc(&cloud_yaw_speed_pid);
 	
@@ -112,27 +112,37 @@ void Cloud_Position(void)
 void Rammer_pid(void)
 {
 	
-	if (tele_data.s1==1) {
-		if (tele_data.s2==1)rammer_42_ver_pid.ref=1000;
-		else rammer_42_ver_pid.ref=0;
-	}
-	if (tele_data.s1!=1) rammer_42_ver_pid.ref=0;
-	rammer_42_ver_pid.fdb=rammer_42_ver.speed;
-	PID_Calc(&rammer_42_ver_pid);
+	// if (tele_data.s1==1) {
+	// 	if (tele_data.s2==1)rammer_42_ver_pid.ref=1000;
+	// 	else rammer_42_ver_pid.ref=0;
+	// }
+	// if (tele_data.s1!=1) rammer_42_ver_pid.ref=0;
+	// rammer_42_ver_pid.fdb=rammer_42_ver.speed;
+	// PID_Calc(&rammer_42_ver_pid);
 	
-	if (tele_data.s1==1) {
-		if (tele_data.s2==2)rammer_42_pid.ref=1000;
-		else rammer_42_pid.ref=0;
-	}
-	if (tele_data.s1!=1) rammer_42_pid.ref=0;
+	// if (tele_data.s1==1) {
+	// 	if (tele_data.s2==2)rammer_42_pid.ref=1000;
+	// 	else rammer_42_pid.ref=0;
+	// }
+	// if (tele_data.s1!=1) rammer_42_pid.ref=0;
+	// rammer_42_pid.fdb=rammer_42.speed;
+	// PID_Calc(&rammer_42_pid);
+	
+	// if (tele_data.s1==2) {
+	// 	if (tele_data.s2==1)rammer_17_pid.ref=1000;
+	// 	else rammer_17_pid.ref=0;
+	// }
+	// if (tele_data.s1!=2) rammer_17_pid.ref=0;
+	// rammer_17_pid.fdb=rammer_17.speed;
+	// PID_Calc(&rammer_17_pid);
+
+	rammer_42_pid.ref=1000;
 	rammer_42_pid.fdb=rammer_42.speed;
 	PID_Calc(&rammer_42_pid);
-	
-	if (tele_data.s1==2) {
-		if (tele_data.s2==1)rammer_17_pid.ref=1000;
-		else rammer_17_pid.ref=0;
-	}
-	if (tele_data.s1!=2) rammer_17_pid.ref=0;
+	rammer_42_ver_pid.ref=1000;
+	rammer_42_ver_pid.fdb=rammer_42_ver.speed;
+	PID_Calc(&rammer_42_ver_pid);
+	rammer_17_pid.ref=3000;
 	rammer_17_pid.fdb=rammer_17.speed;
 	PID_Calc(&rammer_17_pid);
 }
@@ -143,38 +153,38 @@ void Underpan_pid(void)
 {
 
 
-		underpan_201_pid.fdb=underpan_para[0].rotation_rate;
-		underpan_201_pid.ref=(int16_t)(1.0*(tele_data.ch3+tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
-		//underpan_201_pid.ref=0;
-		PID_Calc(&underpan_201_pid);
+	underpan_201_pid.fdb=underpan_para[0].rotation_rate;
+	underpan_201_pid.ref=(int16_t)(1.0*(tele_data.ch3+tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
+	//underpan_201_pid.ref=0;
+	PID_Calc(&underpan_201_pid);
 
-		underpan_202_pid.fdb=underpan_para[1].rotation_rate;
-		underpan_202_pid.ref=(int16_t)(1.0*(tele_data.ch3-tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
-		//underpan_202_pid.ref=0;
-		PID_Calc(&underpan_202_pid);
+	underpan_202_pid.fdb=underpan_para[1].rotation_rate;
+	underpan_202_pid.ref=(int16_t)(1.0*(tele_data.ch3-tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
+	//underpan_202_pid.ref=0;
+	PID_Calc(&underpan_202_pid);
 
-		underpan_203_pid.fdb=underpan_para[2].rotation_rate;
-		underpan_203_pid.ref=(int16_t)(1.0*(-tele_data.ch3-tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
-		//underpan_203_pid.ref=0;
-		PID_Calc(&underpan_203_pid);
+	underpan_203_pid.fdb=underpan_para[2].rotation_rate;
+	underpan_203_pid.ref=(int16_t)(1.0*(-tele_data.ch3-tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
+	//underpan_203_pid.ref=0;
+	PID_Calc(&underpan_203_pid);
 
-		underpan_204_pid.fdb=underpan_para[3].rotation_rate;
-		underpan_204_pid.ref=(int16_t)(1.0*(-tele_data.ch3+tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
-		//underpan_204_pid.ref=0;
-		PID_Calc(&underpan_204_pid);
+	underpan_204_pid.fdb=underpan_para[3].rotation_rate;
+	underpan_204_pid.ref=(int16_t)(1.0*(-tele_data.ch3+tele_data.ch2+tele_data.ch0)/660*SPEED_MAX);
+	//underpan_204_pid.ref=0;
+	PID_Calc(&underpan_204_pid);
 	
 }
 
 void ALLPID_Init()
 {
 								    /****kp		ki		kd	    inte	output****/
-	PID_Init(&cloud_pitch_position_pid,	-1.5,	0.05,	0.7,	300,	800,	positional);
+	PID_Init(&cloud_pitch_position_pid,	2,	0.01,	0,	3000,	800,	positional);
 
-	PID_Init(&cloud_pitch_speed_pid,	2.l,	0.01,	1,	1000,	3000,	positional);
-	
-	PID_Init(&cloud_yaw_position_pid,	2,	0,	0,	300,	1000,	positional);
+	PID_Init(&cloud_pitch_speed_pid, -2.5,	-0.01,	0.8,	30000,	3000,	positional);
 
-	PID_Init(&cloud_yaw_speed_pid	,	-5,	0,	0,	4000,	2000,	positional);
+	PID_Init(&cloud_yaw_position_pid,	-2,	-0.05,	0,	3000,	1000,	positional);
+
+	PID_Init(&cloud_yaw_speed_pid,	1.5,	0.02,	1.2,	10000,	3000,	positional);
 	
 	PID_Init(&rammer_42_pid	,	2,	0.1,	0,	1000, 	3000,	positional);
 	
