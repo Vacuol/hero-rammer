@@ -5,7 +5,7 @@
 #include "pid.h"
 
 #define pitch_mid  -2000					//云台pitch轴初值   800				-800black
-#define yaw_mid -2600						//云台yaw轴初值			300		1000black
+#define yaw_mid -3400						//云台yaw轴初值			300		1000black
 
 /*****ID OF JUDGE****/
 #define POWERHEAT 0x04

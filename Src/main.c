@@ -125,7 +125,8 @@ int main(void)
 //  HAL_Delay(10000);
 	HAL_UART_Receive_DMA(&huart1,teledata_rx,sizeof(teledata_rx));				//ң������������ͨ��DMA�жϴ���teledata			
 	HAL_TIM_Base_Start_IT(&htim6);												//��ʱ���жϴ�
-	CAN1_Init();																//can��ʼ��
+	CAN1_Init();		
+	CAN2_Init();	
 	HAL_GPIO_WritePin(GPIOH,GPIO_PIN_2, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOH,GPIO_PIN_4, GPIO_PIN_SET);
   HAL_GPIO_WritePin(GPIOH,GPIO_PIN_3, GPIO_PIN_SET);

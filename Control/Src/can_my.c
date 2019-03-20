@@ -16,7 +16,7 @@ CAN_RxHeaderTypeDef  Rx1Message;		//�������ò���
 
 void CAN1_Init()						
 {
-CAN_FilterTypeDef canfilter;
+	CAN_FilterTypeDef canfilter;
 	
 	//canfilter.FilterNumber = 0;
 	canfilter.FilterMode = CAN_FILTERMODE_IDMASK;
@@ -33,7 +33,6 @@ CAN_FilterTypeDef canfilter;
 	canfilter.SlaveStartFilterBank = 14;
 	  //use different filter for can1&can2
 	canfilter.FilterBank=0;
-//    canfilter.FilterNumber = 0;
 //    hcan1.pTxMsg = &Tx1Message;
 //    hcan1.pRxMsg = &Rx1Message;
   
@@ -63,17 +62,17 @@ CAN_FilterTypeDef canfilter;
 	canfilter.FilterActivation = ENABLE;
 	canfilter.SlaveStartFilterBank = 14;
 	  //use different filter for can1&can2
-	canfilter.FilterBank=0;
-//    canfilter.FilterNumber = 0;
+	canfilter.FilterBank=14;
+
 //    hcan1.pTxMsg = &Tx1Message;
 //    hcan1.pRxMsg = &Rx1Message;
   
 
 	HAL_CAN_ConfigFilter(&hcan1,&canfilter);
 	
-	HAL_CAN_ActivateNotification(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING);
+	HAL_CAN_ActivateNotification(&hcan2,CAN_IT_RX_FIFO0_MSG_PENDING);
 
-	HAL_CAN_Start(&hcan1);
+	HAL_CAN_Start(&hcan2);
 }
 
 /***************************************
@@ -220,7 +219,7 @@ void Rammer_motor_output(int16_t iq1,int16_t iq2,int16_t iq3)
 	TxData[5] = iq3;
 
 	
-	HAL_CAN_AddTxMessage(&hcan1, &Tx1Message,  TxData, &pTxMailbox);
+	HAL_CAN_AddTxMessage(&hcan2, &Tx1Message,  TxData, &pTxMailbox);
 }
 
 

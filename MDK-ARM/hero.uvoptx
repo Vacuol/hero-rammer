@@ -188,6 +188,16 @@
           <WinNumber>1</WinNumber>
           <ItemText>underpan_para[3].rotation_rate</ItemText>
         </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>rammer_42_ver</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>rammer_42</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

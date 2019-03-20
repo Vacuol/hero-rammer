@@ -60,7 +60,7 @@ void Timer_interrupt(void)
 	}
 	cloud_pitch.motor_output=cloud_pitch_speed_pid.output;
 	cloud_yaw.motor_output=cloud_yaw_speed_pid.output;
-	//Cloud_motor_output(cloud_pitch.motor_output,cloud_yaw.motor_output);								//cloudmotor 	
+	Cloud_motor_output(cloud_pitch.motor_output,cloud_yaw.motor_output);								//cloudmotor 	
 	Underpan_motor_output((int16_t)(underpan_201_pid.output),(int16_t)(underpan_202_pid.output),(int16_t)(underpan_203_pid.output),(int16_t)(underpan_204_pid.output));	
 	if (Timetick1ms>999) Timetick1ms=0;
 	

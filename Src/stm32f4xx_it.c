@@ -348,7 +348,8 @@ void CAN2_TX_IRQHandler(void)
 void CAN2_RX0_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN2_RX0_IRQn 0 */
-
+	HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &Rx1Message, aData);
+	CAN_Getdata(&hcan2, &Rx1Message, aData);
   /* USER CODE END CAN2_RX0_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan2);
   /* USER CODE BEGIN CAN2_RX0_IRQn 1 */
