@@ -43,13 +43,11 @@ uint32_t timeout=0;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern ADC_HandleTypeDef hadc3;
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
 extern TIM_HandleTypeDef htim6;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart4;
-extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart6;
 
 /******************************************************************************/
@@ -203,20 +201,6 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-* @brief This function handles ADC1, ADC2 and ADC3 global interrupts.
-*/
-void ADC_IRQHandler(void)
-{
-  /* USER CODE BEGIN ADC_IRQn 0 */
-
-  /* USER CODE END ADC_IRQn 0 */
-  HAL_ADC_IRQHandler(&hadc3);
-  /* USER CODE BEGIN ADC_IRQn 1 */
-
-  /* USER CODE END ADC_IRQn 1 */
-}
-
-/**
 * @brief This function handles CAN1 TX interrupts.
 */
 void CAN1_TX_IRQHandler(void)
@@ -237,39 +221,12 @@ void CAN1_RX0_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN1_RX0_IRQn 0 */
 	HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &Rx1Message, aData);
-	CAN_Getdata(&hcan1, &Rx1Message, aData);
+	CAN1_Getdata(&hcan1, &Rx1Message, aData);
   /* USER CODE END CAN1_RX0_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan1);
   /* USER CODE BEGIN CAN1_RX0_IRQn 1 */
 
   /* USER CODE END CAN1_RX0_IRQn 1 */
-}
-
-/**
-* @brief This function handles USART2 global interrupt.
-*/
-void USART2_IRQHandler(void)
-{
-  /* USER CODE BEGIN USART2_IRQn 0 */
-
-  /* USER CODE END USART2_IRQn 0 */
-  HAL_UART_IRQHandler(&huart2);
-  /* USER CODE BEGIN USART2_IRQn 1 */
-	timeout=0;
-    while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)//等待就绪
-	{
-	 timeout++;////超时处理
-     if(timeout>HAL_MAX_DELAY) break;		
-	
-	}
-     
-	timeout=0;
-	while(HAL_UART_Receive_IT(&huart2,camera.recieve,1) != HAL_OK)//一次处理完成之后，重新开启中断并设置RxXferCount为1
-	{
-	 timeout++; //超时处理
-	 if(timeout>HAL_MAX_DELAY) break;	
-	}
-  /* USER CODE END USART2_IRQn 1 */
 }
 
 /**
@@ -306,11 +263,11 @@ void UART4_IRQHandler(void)
 void TIM6_DAC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
-	Timer_interrupt();
+	
   /* USER CODE END TIM6_DAC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
-
+	Timer_interrupt();
   /* USER CODE END TIM6_DAC_IRQn 1 */
 }
 
@@ -349,7 +306,7 @@ void CAN2_RX0_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN2_RX0_IRQn 0 */
 	HAL_CAN_GetRxMessage(&hcan2, CAN_RX_FIFO0, &Rx1Message, aData);
-	CAN_Getdata(&hcan2, &Rx1Message, aData);
+	CAN2_Getdata(&hcan2, &Rx1Message, aData);
   /* USER CODE END CAN2_RX0_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan2);
   /* USER CODE BEGIN CAN2_RX0_IRQn 1 */
@@ -368,7 +325,7 @@ void USART6_IRQHandler(void)
   HAL_UART_IRQHandler(&huart6);
   /* USER CODE BEGIN USART6_IRQn 1 */
 	timeout=0;
-    while (HAL_UART_GetState(&huart2) != HAL_UART_STATE_READY)//等待就绪
+    while (HAL_UART_GetState(&huart6) != HAL_UART_STATE_READY)//等待就绪
 	{
 	 timeout++;////超时处理
      if(timeout>HAL_MAX_DELAY) break;		

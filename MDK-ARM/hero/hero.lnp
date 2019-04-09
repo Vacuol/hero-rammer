@@ -2,7 +2,6 @@
 "hero\startup_stm32f427xx.o"
 "hero\main.o"
 "hero\gpio.o"
-"hero\adc.o"
 "hero\can.o"
 "hero\dma.o"
 "hero\tim.o"

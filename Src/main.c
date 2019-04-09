@@ -39,7 +39,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
-#include "adc.h"
 #include "can.h"
 #include "dma.h"
 #include "tim.h"
@@ -52,6 +51,7 @@
 #include "mpu6050.h"
 #include "control.h"
 #include "filter.h"
+#include "delay.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -84,8 +84,8 @@ static void MX_NVIC_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
-	float output[6];
+	int delay = 200;
+	float output[8];
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -113,44 +113,59 @@ int main(void)
   MX_UART4_Init();
   MX_USART1_UART_Init();
   MX_USART6_UART_Init();
-  MX_USART2_UART_Init();
-  MX_TIM1_Init();
   MX_TIM12_Init();
-  MX_ADC3_Init();
   MX_CAN2_Init();
+  MX_TIM5_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
-//  HAL_Delay(10000);
+	
+	
+	CAN1_Init();		
+	CAN2_Init();
+	HAL_Delay(1000);
+	
+	while (delay)
+	{
+		delay--;
+		Lift_motor_output(-800, -800, -800, -800);
+		HAL_Delay(10);
+	
+		liftmotor[0].journey = 0;
+		liftmotor[1].journey = 0;
+		liftmotor[2].journey = 0;
+		liftmotor[3].journey = 0;
+		
+		catch_right.journey = 0;
+		catch_left.journey = 0;
+		
+		promotor_left.journey = 0;
+		promotor_right.journey = 0;
+		
+		cloud_pitch.journey = 0;
+		cloud_yaw.journey = 0;
+	}
+	
 	HAL_UART_Receive_DMA(&huart1,teledata_rx,sizeof(teledata_rx));				//ң������������ͨ��DMA�жϴ���teledata			
 	HAL_TIM_Base_Start_IT(&htim6);												//��ʱ���жϴ�
-	CAN1_Init();		
-	CAN2_Init();	
+	
+
 	HAL_GPIO_WritePin(GPIOH,GPIO_PIN_2, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOH,GPIO_PIN_4, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOH,GPIO_PIN_3, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOH,GPIO_PIN_5, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOH,GPIO_PIN_3, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOH,GPIO_PIN_5, GPIO_PIN_SET);
 	HAL_Delay(1000);
 	MPU6050_Init();																//�����ǳ�ʼ��
 	HAL_TIM_Base_Start(&htim12);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);									//42mm
-	
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);									//17mm		
-	TIM1->CCR1=800; 
-	TIM1->CCR4=800; 
-	TIM1->CCR2=800; 
-	TIM1->CCR3=800;
-	
-	//MPU6050_GyroOffest();				
-	
-//	
-//	HAL_UART_Receive_IT(&huart2, camera.recieve,sizeof(camera.recieve));	
+	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
+	TIM4->CCR1=1500;        //合上
+ //   TIM4->CCR1=500;	    //
+
 //	HAL_UART_Receive_IT(&huart4, &rxPID.pidReadBuf, 1);			
-	HAL_UART_Receive_IT(&huart6, judge.recieve,sizeof(judge.recieve));	
-//	rxPID.pidAdjust = &(power_control_pid);
+	HAL_UART_Receive_IT(&
+	huart6, judge.recieve,sizeof(judge.recieve));	
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -161,31 +176,14 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	output[0] = ph.power;
-	output[1] = 50;//.Gyro.Origin.y;//4000 * sinf(a+1);	
-	output[2] = 1;//cloudPitch.Speed;
-	output[3] = CurrentCapVoltage;//cloudPitch.AnglePID.dout;
-	output[4] = 0;//cloudYaw.Angle;
-	output[5] = 0;//cloudPitch.AnglePID.i*100;
+	output[0] = cloud_pitch.set_journey;
+	output[1] = cloud_pitch.journey;	
+	output[2] = cloud_pitch.set_speed;
+	output[3] = catch_left.set_journey;
+	output[4] = catch_left.journey;	
+	output[5] = catch_left.set_speed;
 	sendware(output,sizeof(output));
-//	UART_SendDataToPC(output,sizeof(output));
-	//HAL_Delay(10);
- 
-	if (tele_data.s1==1) {  	
-		TIM1->CCR1=1450; 
-		TIM1->CCR4=1450;
-	}
-	if (tele_data.s1==2) {  	
-		TIM1->CCR2=1950; 
-		TIM1->CCR3=1950;
-	}
-	if (tele_data.s1==3) {  	
-		TIM1->CCR1=800; 
-		TIM1->CCR4=800; 
-		TIM1->CCR2=800; 
-		TIM1->CCR3=800;
-	}
-	
+	HAL_Delay(3);
   }
   /* USER CODE END 3 */
 
